@@ -1,6 +1,4 @@
 import os
-import sys
-sys.path.append('..')
 import paths
 
 partition_file_path = os.path.join(paths.data_folder_path, 'Eval', 'list_eval_partition.txt')
@@ -13,15 +11,19 @@ with open(partition_file_path) as partition_file, open(identity_file_path) as id
 
 master_file_path = os.path.join(paths.data_folder_path, 'master.csv')
 with open(master_file_path, 'w') as master_file:
-    header = ['image_file_name', 'dataset_type', 'identity', 'anchor_x', 'anchor_y', 'width', 'height']
-    master_file.write(','.join(header) + '\n')
+    header_row = ['image_file_name', 'dataset_type', 'identity', 'bbox_tl_x', 'bbox_tl_y', 'bbox_br_x', 'bbox_br_y']
+    master_file.write(','.join(header_row) + '\n')
     for i in range(len(partition_file_rows)):
         row = []
         row += partition_file_rows[i].split(' ')
         row.append(identity_file_rows[i].split(' ')[1])
         bboxes_row_elements = bbox_file_rows[i].split(' ')
+        bbox = []
         for j in range(len(bboxes_row_elements)):
             if j > 0 and bboxes_row_elements[j] != '':
-                row.append(bboxes_row_elements[j])
+                bbox.append(bboxes_row_elements[j])
+        bbox[2] = str(int(bbox[0]) + int(bbox[2]))
+        bbox[3] = str(int(bbox[1]) + int(bbox[3]))
+        row += bbox
 
         master_file.write(','.join(row) + '\n')

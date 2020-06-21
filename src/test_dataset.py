@@ -1,24 +1,25 @@
 import numpy as np
-from torch.utils.data import DataLoader
 from dataset import CelebA
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
 import cv2
 
 
 def test_instance(db=None):
-
-    instance_idx = np.random.randint(0, len(db), 1)[0]
-    image, (anchor_x, anchor_y, width, height) = db[instance_idx]
-    point_tl = (anchor_x, anchor_y)
-    point_br = (anchor_x + width, anchor_y + height)
+    instance_idx = 39
+    image, label, (bbox_tl_x, bbox_tl_y, bbox_br_x, bbox_br_y) = db[instance_idx]
+    print('Instance Index: {}'.format(instance_idx))
+    print('Label: {}'.format(label))
+    print('Image Shape (Width × Height): ({} × {})'.format(image.shape[1], image.shape[0]))
+    print('Facial Shape (Width × Height): ({} × {})'.format(bbox_br_x - bbox_tl_x, bbox_br_y - bbox_tl_y))
+    print('Facial Area: {}'.format((bbox_br_x - bbox_tl_x) * (bbox_br_y - bbox_tl_y)))
 
     plt.figure(num='Dataset Tester', figsize=(10, 10))
-    plt.title('Instance Index: {}'.format(instance_idx))
-    image = cv2.rectangle(image, point_tl, point_br, color=(255, 0, 0), thickness=2)
+    plt.title('Identity: {}'.format(label))
+    image = cv2.rectangle(image, (int(bbox_tl_x), int(bbox_tl_y)), (int(bbox_br_x), int(bbox_br_y)), color=(1, 0, 0), thickness=2)
     plt.imshow(image, cmap='gray')
     plt.show()
 
+
 db = CelebA(dataset_type=CelebA.VALIDATION)
-db.shuffle()
-image, (anchor_x, anchor_y, width, height) = db[0]
-# test_instance(db)
+# db.shuffle()
+test_instance(db)
